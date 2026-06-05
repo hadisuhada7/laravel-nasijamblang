@@ -2,62 +2,104 @@
 
 ## Original Problem Statement
 > Saya memiliki landing page dengan menggunakan phyton, bisakan ubah struktur nya menjadi menggunakan laravel
+>
+> Saya perlu fitur dinamis Form Daftar Kunjungan dan Data Kunjungan sesuai yang ada di versi React, serta menambahkan database MySQL + form handling.
 
 Sumber: https://github.com/hadisuhada7/gastronominasijamblang.git
-Target: Laravel 11 (PHP 8.2+), static landing page (tanpa database).
+Target: Laravel 11 (PHP 8.2+) **dengan MySQL/MariaDB** untuk visitor management.
 
 ## Architecture
 - **Framework**: Laravel 11
-- **PHP**: 8.2.31
-- **Templating**: Blade (1 layout `landing.blade.php` + 11 partial section)
-- **Konten**: `config/content.php` (PHP array bilingual ID/EN)
-- **Styling**: Tailwind CSS 3.4 + custom CSS (mereplikasi palet & font versi React)
-- **Interaktivitas**: Alpine.js (mobile menu, navbar scroll state, scroll-to-top)
-- **Animasi reveal-on-scroll**: IntersectionObserver vanilla JS (`.reveal` class)
-- **Scrollspy**: IntersectionObserver di `resources/js/app.js`
+- **PHP**: 8.2.31 (ekstensi: mbstring, xml, curl, zip, gd, pdo_mysql)
+- **Database**: MySQL 5.7+ / MariaDB 10.3+ (dikonfigurasi via `.env`)
+- **Templating**: Blade
+- **Konten**: `config/content.php` (PHP array bilingual ID/EN; mencakup landing + visitor_form + visitor_data)
+- **Styling**: Tailwind CSS 3.4 + custom CSS
+- **Interaktivitas**: Alpine.js
+- **Animasi**: IntersectionObserver (.reveal) + scrollspy
 - **Ikon**: Lucide via CDN
-- **Font**: Cormorant Garamond + Manrope (Google Fonts)
+- **Font**: Cormorant Garamond + Manrope
+- **Export Excel**: `phpoffice/phpspreadsheet`
 - **Build**: Vite
 
 Lokasi proyek: `/app/laravel-app/`
 
+## Data Model
+
+**Table `visitors`**:
+- `id` (PK, autoincrement)
+- `nama_lengkap` VARCHAR(100)
+- `domisili` VARCHAR(100)
+- `email` VARCHAR(150)
+- `created_at` / `updated_at` (timestamps; indexed `created_at`)
+
+## Routes
+
+| Method | URL                    | Nama                  |
+|--------|------------------------|-----------------------|
+| GET    | `/`                    | `home`                |
+| GET    | `/visitor-form`        | `visitor.form`        |
+| POST   | `/visitor-form`        | `visitor.store`       |
+| GET    | `/visitor-data`        | `visitor.index`       |
+| GET    | `/visitor-data/export` | `visitor.export`      |
+| DELETE | `/visitor-data`        | `visitor.destroy_all` |
+
 ## What's Been Implemented (Jun 5, 2026)
-- [x] Bootstrap proyek Laravel 11 + instalasi PHP/Composer di environment
-- [x] Konfigurasi `config/content.php` bilingual (ID/EN) mirror dari `data/content.js`
-- [x] 9 section blade partials: hero, philosophy, ingredients, techniques, tasting, serving, experience, nutrition, ethics + footer
-- [x] Navbar fixed dengan scrollspy + transparent→solid saat scroll
-- [x] Mobile menu (Alpine.js)
-- [x] Language toggle via query string `?lang=id|en`
-- [x] Reveal-on-scroll animation menggantikan framer-motion
-- [x] Scroll-to-top button
-- [x] Semua `data-testid` versi React dipertahankan
-- [x] Aset gambar dipindah ke `public/images/`
-- [x] Build production berhasil (vite build)
-- [x] Verifikasi visual screenshot: hero, philosophy, techniques, ethics — semua render identik dengan versi React
-- [x] HTTP 200 untuk `/` (ID) dan `/?lang=en` (EN)
-- [x] README.md dengan instruksi setup & deployment
+
+### Iterasi 1 (static landing)
+- [x] Bootstrap Laravel 11 + instalasi PHP/Composer di environment
+- [x] `config/content.php` bilingual mirror dari `data/content.js`
+- [x] 9 section blade partials + footer
+- [x] Navbar fixed dengan scrollspy, mobile menu, language toggle
+- [x] Reveal-on-scroll & scroll-to-top
+- [x] README + verifikasi visual ID & EN
+
+### Iterasi 2 (fitur dinamis + MySQL) ⭐
+- [x] Instalasi MariaDB di environment + buat database `nasi_jamblang` + user `laravel`
+- [x] Migrasi `create_visitors_table` (nama_lengkap, domisili, email, timestamps, index created_at)
+- [x] Model Eloquent `Visitor`
+- [x] `VisitorController` dengan 5 action: `form`, `store`, `index`, `export`, `destroyAll`
+- [x] View `visitor_form.blade.php` dengan validasi server-side (min 2 / max 100/150, email valid) — error bilingual
+- [x] View `visitor_data.blade.php` dengan tabel responsif (desktop) + card view (mobile)
+- [x] Search (`?q=`) di nama / domisili / email
+- [x] Pagination 10/halaman (prev/next + nomor halaman, format `1 … N`)
+- [x] Export ke Excel (`phpoffice/phpspreadsheet`) yang mengikuti filter pencarian aktif
+- [x] Delete all dengan confirm dialog
+- [x] CSRF protection
+- [x] Tombol "Daftar Kunjungan" / "Register Visit" di navbar landing (desktop + mobile)
+- [x] Flash toast sukses di landing setelah form submit
+- [x] Empty state berbeda untuk "belum ada data" vs "hasil pencarian kosong"
+- [x] Format tanggal locale `DD MMM YYYY, HH:mm` (id/en)
+- [x] Dump schema MySQL (`database/schema_mysql.sql`) sebagai referensi
+- [x] README dilengkapi dengan setup MySQL + dokumentasi route
+
+### Verifikasi
+- [x] HTTP 200 untuk `/`, `/visitor-form`, `/visitor-data` (ID & EN)
+- [x] Submit form → record tersimpan di MySQL → redirect ke landing dengan toast
+- [x] Validasi error muncul (border merah + pesan) saat input invalid
+- [x] Search `?q=cirebon` filter dengan benar
+- [x] Pagination: 15 record → page 1 (10 row) + page 2 (5 row)
+- [x] Export `.xlsx` valid (verified via `file` command: "Microsoft Excel 2007+")
+- [x] Screenshot ID + EN visitor data page tampil sempurna
 
 ## Personas
-- **Owner / Pengelola situs**: butuh landing page elegan untuk mempromosikan kuliner Nasi Jamblang Cirebon, lebih nyaman pakai stack PHP/Laravel untuk hosting tradisional.
-- **Pengunjung**: ingin membaca tentang sejarah, bahan, teknik, dan etika kuliner Nasi Jamblang dalam Bahasa Indonesia atau Inggris.
-
-## Core Requirements (Static)
-1. Visual identik dengan versi React (warna, font, layout, animasi).
-2. Bilingual ID/EN.
-3. Tanpa database (static).
-4. Berjalan di stack Laravel/PHP standard.
+- **Pengelola situs / Admin**: ingin mengumpulkan data pengunjung yang tertarik dengan Gastronomi Nasi Jamblang, melihat list lengkap, mencari berdasarkan nama/kota, dan export untuk analisis offline.
+- **Pengunjung**: ingin mengisi form kunjungan untuk dicatat sebagai bagian dari pengalaman eksplorasi kuliner.
 
 ## Catatan Deployment
-Aplikasi ini **TIDAK DAPAT di-deploy via tombol Deploy Emergent** karena Emergent menggunakan stack Python/Node. User harus deploy ke hosting PHP (shared hosting, VPS, Laravel Forge, Cloudways, dll).
+**TIDAK DAPAT di-deploy via tombol Deploy Emergent** karena stack berbeda. User harus deploy ke hosting PHP (shared hosting, VPS, Laravel Forge, Cloudways) dengan MySQL/MariaDB tersedia. Production checklist tersedia di README.
 
-## Prioritized Backlog (jika ingin lanjut)
-- **P1** — Re-integrasi fitur "Daftar Kunjungan" / "Visitor Data" (butuh database MySQL/PostgreSQL/SQLite).
-- **P2** — Setup `php artisan optimize` & caching untuk produksi.
-- **P2** — SEO meta tags lanjutan (Open Graph, Twitter Card, JSON-LD Restaurant schema).
-- **P3** — Sitemap.xml dinamis + robots.txt.
-- **P3** — Form kontak dengan email notification.
+## Prioritized Backlog
+- **P2** — Rate limiting di endpoint POST `/visitor-form` (cegah spam).
+- **P2** — Captcha (hCaptcha/Turnstile) di form.
+- **P2** — Email konfirmasi otomatis ke pengunjung setelah submit.
+- **P3** — Admin login (Laravel Breeze) untuk proteksi `/visitor-data`.
+- **P3** — Detail page per visitor + edit/delete per row.
+- **P3** — Chart/statistik kunjungan per kota / per bulan di dashboard.
+- **P3** — SEO meta tags + JSON-LD Restaurant schema.
 - **P3** — Dark mode toggle.
 
 ## Next Tasks
-- User download `/app/laravel-app/` dan jalankan `composer install && yarn install && yarn build && php artisan serve` di mesin lokal.
-- (Opsional) Tambahkan fitur dinamis bila diminta.
+- (Opsional) Tambahkan rate limit `throttle:5,1` di route POST `visitor.store`.
+- (Opsional) Tambahkan admin auth untuk `/visitor-data`.
+- (Opsional) Push ke GitHub via tombol "Save to Github".

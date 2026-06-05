@@ -25,6 +25,24 @@
 </head>
 <body class="bg-[#FDFBF7] min-h-screen">
 
+@if (session('visit_registered'))
+    @php $visitFormCopy = config("content.visitor_form.{$lang}"); @endphp
+    <div
+        x-data="{ show: true }"
+        x-init="setTimeout(() => show = false, 5000)"
+        x-show="show"
+        x-transition.opacity
+        data-testid="flash-success"
+        class="fixed top-24 right-6 z-[60] max-w-sm bg-[#2C4C3B] text-white shadow-xl rounded-2xl px-5 py-4 flex items-start gap-3"
+    >
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-[#D19C4C] shrink-0 mt-0.5"></i>
+        <p class="text-sm leading-relaxed">{{ $visitFormCopy['successFlash'] }}</p>
+        <button type="button" @click="show = false" class="text-white/60 hover:text-white shrink-0">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    </div>
+@endif
+
 @include('partials.navbar', ['lang' => $lang, 't' => $t, 'otherLang' => $otherLang, 'navKeys' => $navKeys])
 
 <main>

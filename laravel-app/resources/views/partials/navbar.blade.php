@@ -48,6 +48,19 @@
 
         {{-- Right cluster --}}
         <div class="flex items-center gap-3">
+            {{-- Register Visit (CTA) --}}
+            <a
+                href="{{ route('visitor.form', ['lang' => $lang]) }}"
+                data-testid="cta-register-visit"
+                :class="scrolled
+                    ? 'bg-[#2C4C3B] text-white hover:bg-[#3a6050]'
+                    : 'border border-white/40 text-white hover:bg-white/10'"
+                class="hidden lg:inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full transition-all"
+            >
+                <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+                {{ $t['register_visit'] }}
+            </a>
+
             {{-- Language toggle --}}
             <div data-testid="language-toggle"
                  :class="scrolled ? 'border-[#E5D9C5]' : 'border-white/30'"
@@ -104,6 +117,26 @@
                     {{ $t['nav'][$key] }}
                 </a>
             @endforeach
+        </div>
+        <div class="mt-4 pt-3 border-t border-[#E5D9C5] flex gap-3">
+            <a
+                href="{{ route('visitor.form', ['lang' => $lang]) }}"
+                data-testid="mobile-cta-register-visit"
+                @click="open = false"
+                class="flex-1 inline-flex items-center justify-center gap-2 bg-[#2C4C3B] text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-[#3a6050] transition-all"
+            >
+                <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+                {{ $t['register_visit'] }}
+            </a>
+            <a
+                href="{{ route('visitor.index', ['lang' => $lang]) }}"
+                data-testid="mobile-cta-visitor-data"
+                @click="open = false"
+                class="flex-1 inline-flex items-center justify-center gap-2 border border-[#E5D9C5] text-[#2A2421] text-sm font-semibold py-2.5 rounded-xl hover:bg-[#F7F2EA] transition-all"
+            >
+                <i data-lucide="layout-list" class="w-4 h-4"></i>
+                {{ $lang === 'id' ? 'Data Pengunjung' : 'Visitor Data' }}
+            </a>
         </div>
     </div>
 </header>
