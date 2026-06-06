@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#FDFBF7" />
     <title>{{ $t['title'] }} — Nasi Jamblang</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
@@ -35,12 +36,12 @@
                         </a>
                     @endforeach
                 </div>
-                <a href="{{ route('visitor.index', ['lang' => $lang]) }}"
+                <!-- <a href="{{ route('visitor.index', ['lang' => $lang]) }}"
                    data-testid="link-visitor-data"
                    class="hidden sm:inline-flex items-center gap-1.5 text-sm text-[#6E635A] hover:text-[#2C4C3B] transition-colors">
                     <i data-lucide="layout-list" class="w-4 h-4"></i>
                     {{ $lang === 'id' ? 'Data Pengunjung' : 'Visitor Data' }}
-                </a>
+                </a> -->
             </div>
         </div>
     </header>

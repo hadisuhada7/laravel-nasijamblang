@@ -14,6 +14,7 @@
     <meta name="theme-color" content="#1A140F" />
     <meta name="description" content="Gastronomi Nasi Jamblang - Warisan Kuliner Pesisir Cirebon" />
     <title>{{ $t['footer']['brand'] }} - {{ $t['footer']['tagline'] }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
